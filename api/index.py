@@ -8,17 +8,16 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# Inicialização do Firebase
+# Inicialização do Firebase apenas uma vez
 if not firebase_admin._apps:
     try:
         firebase_json = os.environ.get("FIREBASE_CREDENTIALS")
-        if not firebase_json:
-            raise Exception("Variável FIREBASE_CREDENTIALS não encontrada")
         cred_dict = json.loads(firebase_json)
         cred = credentials.Certificate(cred_dict)
         firebase_admin.initialize_app(cred)
+        print("✅ Firebase conectado com sucesso")
     except Exception as e:
-        print("Erro ao inicializar o Firebase:", e)
+        print("❌ Erro ao inicializar Firebase:", e)
 
 db = firestore.client()
 colecao = 'dbdenuncia'
@@ -31,4 +30,5 @@ def receber_denuncia():
         doc_ref = db.collection(colecao).add(dados)
         return jsonify({"status": "sucesso", "id": doc_ref[1].id}), 201
     except Exception as e:
+        print("❌ Erro ao salvar denúncia:", e)
         return jsonify({"status": "erro", "mensagem": str(e)}), 500

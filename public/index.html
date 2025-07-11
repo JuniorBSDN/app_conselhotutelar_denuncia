@@ -448,20 +448,6 @@
     </div>
 
 <script>
-// --- Lógica para o menu mobile ---
-document.getElementById('menu-button').addEventListener('click', function() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    mobileMenu.classList.toggle('hidden');
-});
-
-// Fecha o menu mobile quando um link é clicado (para rolagem suave)
-document.querySelectorAll('#mobile-menu a').forEach(item => {
-    item.addEventListener('click', () => {
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenu.classList.add('hidden');
-    });
-});
-
 // --- Lógica para o formulário de denúncia ---
 document.getElementById("reportForm").addEventListener("submit", async function(e) {
   e.preventDefault(); // Impede o envio padrão do formulário
@@ -478,30 +464,45 @@ document.getElementById("reportForm").addEventListener("submit", async function(
   };
 
   try {
-    // Faz a requisição POST para o seu backend no Vercel
-    // A rota "/api/denuncias" será roteada pelo vercel.json para o seu index.py
+    // Faz a requisição POST para o seu backend na Vercel
     const resposta = await fetch("/api/denuncias", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dados) // Converte o objeto JavaScript para JSON string
+      body: JSON.stringify(dados)
     });
 
     const resultado = await resposta.json(); // Pega a resposta JSON do backend
 
-    // Verifica se a requisição foi bem-sucedida (status 2xx)
+    // Verifica se a requisição foi bem-sucedida
     if (resposta.ok) {
-      alert("Denúncia enviada com sucesso! Agradecemos sua colaboração.");
+      exibirMensagem("Denúncia enviada com sucesso! Agradecemos sua colaboração.", true);
       document.getElementById("reportForm").reset(); // Limpa o formulário
     } else {
-      // Exibe a mensagem de erro vinda do backend (ex: erro de validação)
-      alert("Erro ao enviar denúncia: " + resultado.mensagem);
+      exibirMensagem("Erro ao enviar denúncia: " + (resultado.mensagem || "Erro desconhecido."), false);
     }
   } catch (erro) {
-    // Captura erros de rede ou outros problemas na requisição
-    alert("Erro de conexão ao enviar denúncia. Por favor, verifique sua internet ou tente novamente mais tarde.");
-    console.error("Erro na requisição Fetch:", erro); // Loga o erro no console do navegador para depuração
+    exibirMensagem("Erro de conexão ao enviar denúncia. Verifique sua internet ou tente novamente mais tarde.", false);
+    console.error("Erro na requisição Fetch:", erro);
   }
 });
+
+// --- Função auxiliar para exibir mensagens na tela ---
+function exibirMensagem(texto, sucesso = true) {
+  let mensagem = document.getElementById("mensagem");
+  if (!mensagem) {
+    mensagem = document.createElement("div");
+    mensagem.id = "mensagem";
+    mensagem.className = "mt-4 text-center font-semibold";
+    document.getElementById("reportForm").appendChild(mensagem);
+  }
+
+  mensagem.className = "mt-4 text-center font-semibold " + (sucesso ? "text-green-600" : "text-red-600");
+  mensagem.innerText = texto;
+
+  setTimeout(() => {
+    mensagem.innerText = "";
+  }, 8000); // Limpa a mensagem após 8 segundos
+}
 </script>
 
 

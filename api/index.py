@@ -12,6 +12,8 @@ CORS(app)
 if not firebase_admin._apps:
     try:
         firebase_json = os.environ.get("FIREBASE_CREDENTIALS")
+        if not firebase_json:
+            raise Exception("Variável FIREBASE_CREDENTIALS não encontrada")
         cred_dict = json.loads(firebase_json)
         cred = credentials.Certificate(cred_dict)
         firebase_admin.initialize_app(cred)
@@ -21,7 +23,7 @@ if not firebase_admin._apps:
 db = firestore.client()
 colecao = 'dbdenuncia'
 
-@app.route("/denuncias", methods=["POST"])
+@app.route("/api/denuncias", methods=["POST"])
 def receber_denuncia():
     try:
         dados = request.json

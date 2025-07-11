@@ -447,38 +447,38 @@
         </a>
     </div>
  <script>
-     document.querySelector("reportForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+ document.querySelector("#reportForm").addEventListener("submit", function (e) {
+  e.preventDefault();
 
-      const dados = {
-        tipo: "denuncia",querySelelctor("reportType").value.trim(),
-        vitima: document.querySelector("victimInfo").value.trim(),
-        incidente: document.querySelector("incidentDetails").value.trim(),
-        local: document.querySelector("location").value.trim(),
-        nome: document.querySelector("reporterName").value.trim(),
-        contato: document.querySelector("reporterContact").value.trim(),
-        anonimo: document.querySelector("anonymous").value.trim()
-      };
+  const dados = {
+    tipo: document.querySelector("#reportType").value.trim(),
+    vitima: document.querySelector("#victimInfo").value.trim(),
+    incidente: document.querySelector("#incidentDetails").value.trim(),
+    local: document.querySelector("#location").value.trim(),
+    nome: document.querySelector("#reporterName").value.trim(),
+    contato: document.querySelector("#reporterContact").value.trim(),
+    anonimo: document.querySelector("#anonymous").value.trim()
+  };
 
-      fetch("/api/denuncias", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dados)
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "sucesso") {
-          alert("Denúncia enviada com sucesso!");
-          document.querySelector("reportForm").reset();
-        } else {
-          alert("Erro: " + data.mensagem);
-        }
-      })
-      .catch(err => {
-        console.error("Erro:", err);
-        alert("Erro de conexão ao enviar denúncia.");
-      });
-    });
+  fetch("/api/denuncias", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "sucesso") {
+      alert("Denúncia enviada com sucesso!");
+      document.querySelector("#reportForm").reset();
+    } else {
+      alert("Erro: " + data.mensagem);
+    }
+  })
+  .catch(err => {
+    console.error("Erro:", err);
+    alert("Erro de conexão ao enviar denúncia.");
+  });
+});
   </script>
 </body>
 

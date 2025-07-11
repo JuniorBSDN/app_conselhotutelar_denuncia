@@ -448,9 +448,25 @@
     </div>
 
 <script>
-document.getElementById("reportForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
+// --- Lógica para o menu mobile ---
+document.getElementById('menu-button').addEventListener('click', function() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.toggle('hidden');
+});
 
+// Fecha o menu mobile quando um link é clicado (para rolagem suave)
+document.querySelectorAll('#mobile-menu a').forEach(item => {
+    item.addEventListener('click', () => {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.add('hidden');
+    });
+});
+
+// --- Lógica para o formulário de denúncia ---
+document.getElementById("reportForm").addEventListener("submit", async function(e) {
+  e.preventDefault(); // Impede o envio padrão do formulário
+
+  // Coleta os dados do formulário
   const dados = {
     tipo: document.getElementById("reportType").value,
     vitima: document.getElementById("victimInfo").value,
@@ -462,22 +478,28 @@ document.getElementById("reportForm").addEventListener("submit", async function(
   };
 
   try {
+    // Faz a requisição POST para o seu backend no Vercel
+    // A rota "/api/denuncias" será roteada pelo vercel.json para o seu index.py
     const resposta = await fetch("/api/denuncias", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dados)
+      body: JSON.stringify(dados) // Converte o objeto JavaScript para JSON string
     });
 
-    const resultado = await resposta.json();
+    const resultado = await resposta.json(); // Pega a resposta JSON do backend
+
+    // Verifica se a requisição foi bem-sucedida (status 2xx)
     if (resposta.ok) {
-      alert("Denúncia enviada com sucesso!");
-      document.getElementById("reportForm").reset();
+      alert("Denúncia enviada com sucesso! Agradecemos sua colaboração.");
+      document.getElementById("reportForm").reset(); // Limpa o formulário
     } else {
-      alert("Erro: " + resultado.mensagem);
+      // Exibe a mensagem de erro vinda do backend (ex: erro de validação)
+      alert("Erro ao enviar denúncia: " + resultado.mensagem);
     }
   } catch (erro) {
-    alert("Erro ao enviar denúncia. Tente novamente.");
-    console.error(erro);
+    // Captura erros de rede ou outros problemas na requisição
+    alert("Erro de conexão ao enviar denúncia. Por favor, verifique sua internet ou tente novamente mais tarde.");
+    console.error("Erro na requisição Fetch:", erro); // Loga o erro no console do navegador para depuração
   }
 });
 </script>

@@ -446,66 +446,29 @@
             <i class="fas fa-exclamation-triangle text-2xl"></i>
         </a>
     </div>
-
 <script>
-// --- Lógica para o formulário de denúncia ---
-document.getElementById("reportForm").addEventListener("submit", async function(e) {
-  e.preventDefault(); // Impede o envio padrão do formulário
+const dados = {
+  nome: document.querySelector('#nome').value,
+  contato: document.querySelector('#contato').value,
+  local: document.querySelector('#local').value,
+  mensagem: document.querySelector('#mensagem').value
+};
 
-  // Coleta os dados do formulário
-  const dados = {
-    tipo: document.getElementById("reportType").value,
-    vitima: document.getElementById("victimInfo").value,
-    detalhes: document.getElementById("incidentDetails").value,
-    local: document.getElementById("location").value,
-    denunciante: document.getElementById("reporterName").value,
-    contato: document.getElementById("reporterContact").value,
-    anonimo: document.getElementById("anonymous").checked
-  };
-
-  try {
-    // Faz a requisição POST para o seu backend na Vercel
-    const resposta = await fetch("/api/denuncias", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dados)
-    });
-
-    const resultado = await resposta.json(); // Pega a resposta JSON do backend
-
-    // Verifica se a requisição foi bem-sucedida
-    if (resposta.ok) {
-      exibirMensagem("Denúncia enviada com sucesso! Agradecemos sua colaboração.", true);
-      document.getElementById("reportForm").reset(); // Limpa o formulário
-    } else {
-      exibirMensagem("Erro ao enviar denúncia: " + (resultado.mensagem || "Erro desconhecido."), false);
-    }
-  } catch (erro) {
-    exibirMensagem("Erro de conexão ao enviar denúncia. Verifique sua internet ou tente novamente mais tarde.", false);
-    console.error("Erro na requisição Fetch:", erro);
-  }
+fetch('/api/denuncias', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(dados)
+})
+.then(res => res.json())
+.then(data => {
+  console.log('Sucesso:', data);
+  alert('Denúncia enviada com sucesso!');
+})
+.catch(err => {
+  console.error('Erro:', err);
+  alert('Erro de conexão ao enviar denúncia.');
 });
-
-// --- Função auxiliar para exibir mensagens na tela ---
-function exibirMensagem(texto, sucesso = true) {
-  let mensagem = document.getElementById("mensagem");
-  if (!mensagem) {
-    mensagem = document.createElement("div");
-    mensagem.id = "mensagem";
-    mensagem.className = "mt-4 text-center font-semibold";
-    document.getElementById("reportForm").appendChild(mensagem);
-  }
-
-  mensagem.className = "mt-4 text-center font-semibold " + (sucesso ? "text-green-600" : "text-red-600");
-  mensagem.innerText = texto;
-
-  setTimeout(() => {
-    mensagem.innerText = "";
-  }, 8000); // Limpa a mensagem após 8 segundos
-}
 </script>
-
-
 </body>
 
 </html>
